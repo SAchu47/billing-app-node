@@ -1,12 +1,13 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
+import Billing from './Billing';
 
 export interface IPayment {
-    amount: Number;
+    amount: number;
     billId: string;
     customerId: string;
 }
 
-export interface IPaymentModel extends IPayment, Document { }
+export interface IPaymentModel extends IPayment, Document {}
 
 const PaymentSchema: Schema = new Schema(
     {
@@ -27,8 +28,29 @@ const PaymentSchema: Schema = new Schema(
         }
     },
     {
-        versionKey: false
+        versionKey: false,
+        timestamps: true
     }
-)
+);
 
-export default mongoose.model<IPaymentModel>("Payment", PaymentSchema);
+// Middleware to update billing status and amount
+PaymentSchema.post<IPaymentModel[]>('insertMany', async function (payments) {
+    for (const payment of payments) {
+        try {
+            const billing = await Billing.findById(payment.billId);
+            if (billing) {
+                billing.amountPending = billing.amountPending - payment.amount;
+                if (billing.amountPending === 0) {
+                    billing.status = 'CLOSED';
+                } else if (billing.amountPending > 0) {
+                    billing.status = 'PENDING';
+                }
+                await billing.save();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+});
+
+export default mongoose.model<IPaymentModel>('Payment', PaymentSchema);

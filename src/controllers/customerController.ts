@@ -5,7 +5,6 @@ import { RESPONSE } from '../config/constantResponse';
 import Logging from '../config/consoleLogging';
 import { getAccessToken } from '../config/auth';
 import { CustomRequest } from '../middleware/checkAuthorization';
-import asyncHandler from 'express-async-handler';
 
 //@description     create customer
 //@route           POST /v1/customer/register
@@ -106,7 +105,7 @@ export const updateCustomer = async (req: Request, res: Response, _next: NextFun
         return res.status(403).json(responseBuilder(false, RESPONSE.NOPERMISSION));
     } else {
         const _id = req.params.id;
-        await Customer.findByIdAndUpdate(req.params.id, req.body, {
+        await Customer.findByIdAndUpdate(_id, req.body, {
             new: true
         })
             .then((customer) => {

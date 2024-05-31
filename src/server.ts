@@ -5,6 +5,8 @@ import { config } from './config/config';
 import Logging from './config/consoleLogging';
 import adminRouter from './routes/adminRouter';
 import customerRouter from './routes/customerRouter';
+import billingRouter from './routes/billingRouter';
+import paymentRouter from './routes/paymentRouter';
 
 const router = express();
 
@@ -59,8 +61,10 @@ const StartServer = () => {
     });
 
     /** Routes */
-    router.use('/admin', adminRouter);
-    router.use('/customer', customerRouter);
+    router.use('/v1/admin', adminRouter);
+    router.use('/v1/customer', customerRouter);
+    router.use('/v1/billing', billingRouter);
+    router.use('/v1/payment', paymentRouter);
 
     /** Healthcheck */
     router.get('/ping', (req, res, next) => res.status(200).json({ hello: 'world' }));

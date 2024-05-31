@@ -1,51 +1,56 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IBilling {
     startTime: Date;
     endTime: Date;
-    count: Number;
+    count: number;
     date: Date;
-    rate: Number;
+    rate: number;
     jobType: 'JCB' | 'TRACTOR';
     tripType: 'HOURLY' | 'COUNT';
     customerId: string;
-    amount: Number;
+    amount: number;
+    amountPending: number;
     status: 'CLOSED' | 'PENDING' | 'NOT_PAID';
 }
 
-export interface IBillingModel extends IBilling, Document { }
+export interface IBillingModel extends IBilling, Document {}
 
 const BillingSchema: Schema = new Schema(
     {
         startTime: {
             type: Date,
             required: false,
-            default: null,
+            default: undefined
         },
         endTime: {
             type: Date,
             required: false,
-            default: null,
+            default: undefined
         },
         date: {
             type: Date,
-            required: true,
+            required: true
         },
         rate: {
             type: Number,
             required: true,
-            min: 0, // Ensure the rate is non-negative
+            min: 0 // Ensure the rate is non-negative
         },
         count: {
             type: Number,
             required: false,
-            default: null,
-            min: 0, // Ensure the rate is non-negative
+            default: undefined,
+            min: 0 // Ensure the rate is non-negative
         },
         amount: {
             type: Number,
             required: true,
-            min: 0, // Ensure the rate is non-negative
+            min: 0 // Ensure the rate is non-negative
+        },
+        amountPending: {
+            type: Number,
+            required: true
         },
         status: {
             type: String,
@@ -56,12 +61,12 @@ const BillingSchema: Schema = new Schema(
         jobType: {
             type: String,
             enum: ['JCB', 'TRACTOR'], // Constrain to specific values
-            required: true,
+            required: true
         },
         tripType: {
             type: String,
             enum: ['HOURLY', 'COUNT'], // Constrain to specific values
-            required: true,
+            required: true
         },
         customerId: {
             type: Schema.Types.ObjectId,
@@ -70,9 +75,9 @@ const BillingSchema: Schema = new Schema(
         }
     },
     {
-        versionKey: false
+        versionKey: false,
+        timestamps: true
     }
-)
+);
 
-export default mongoose.model<IBillingModel>("Billing", BillingSchema);
-
+export default mongoose.model<IBillingModel>('Billing', BillingSchema);
